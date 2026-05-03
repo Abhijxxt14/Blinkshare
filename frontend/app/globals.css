@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #050505;
+  --color-surface: rgba(255, 255, 255, 0.03);
+  --color-text: #ffffff;
+  --color-muted: #a1a1aa;
+  --color-accent: #d946ef;
+  --color-border: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-jakarta), sans-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: var(--color-surface);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .btn-primary {
+    background: var(--color-text);
+    color: #000;
+    font-weight: 600;
+    padding: 12px 32px;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    font-weight: 500;
+    padding: 12px 32px;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--color-surface);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .heading-1 {
+    font-size: 56px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .heading-2 {
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
