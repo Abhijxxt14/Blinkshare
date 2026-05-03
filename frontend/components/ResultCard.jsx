@@ -4,22 +4,22 @@ export default function ResultCard({ result, onReset }) {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8000`;
 
   return (
-    <div className="glass-card p-12 flex flex-col items-center bg-[#050505]/60 relative overflow-hidden">
+    <div className="glass-card p-6 sm:p-10 md:p-12 flex flex-col items-center bg-[#050505]/60 relative overflow-hidden">
       {/* Success Icon */}
-      <div className="w-16 h-16 rounded-full bg-[#d946ef]/10 border border-[#d946ef]/30 flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(217,70,239,0.2)]">
+      <div className="w-16 h-16 rounded-full bg-[#d946ef]/10 border border-[#d946ef]/30 flex items-center justify-center mb-6 sm:mb-8 shadow-[0_0_30px_rgba(217,70,239,0.2)]">
         <svg className="w-8 h-8 text-[#d946ef]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       </div>
       
-      <h2 className="heading-2 mb-2 text-center">Transfer Ready</h2>
-      <p className="text-[#a1a1aa] mb-10 text-center">Your file is encrypted and secured on the network.</p>
+      <h2 className="heading-2 mb-2 text-center text-3xl sm:text-4xl">Transfer Ready</h2>
+      <p className="text-[#a1a1aa] mb-8 sm:mb-10 text-center text-sm sm:text-base">Your file is encrypted and secured on the network.</p>
       
       {/* Code Display */}
-      <div className="w-full bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-8 mb-10 flex flex-col items-center relative group overflow-hidden">
+      <div className="w-full bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-4 sm:p-8 mb-8 sm:mb-10 flex flex-col items-center relative group overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(217,70,239,0.05)] to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
-        <div className="text-[#a1a1aa] text-sm uppercase tracking-[0.2em] font-bold mb-4">Access Code</div>
-        <div className="text-6xl md:text-7xl font-mono tracking-[0.15em] font-bold text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+        <div className="text-[#a1a1aa] text-xs sm:text-sm uppercase tracking-widest sm:tracking-[0.2em] font-bold mb-2 sm:mb-4">Access Code</div>
+        <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-mono tracking-widest sm:tracking-[0.15em] font-bold text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] break-all text-center">
           {result.code}
         </div>
       </div>
