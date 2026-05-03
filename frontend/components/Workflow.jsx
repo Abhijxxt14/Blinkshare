@@ -31,7 +31,7 @@ export default function Workflow() {
       <div className="text-center mb-20 max-w-3xl mx-auto">
         <h2 className="heading-2 mb-6 text-white">Engineered for Absolute Privacy</h2>
         <p className="text-[#a1a1aa] text-lg leading-relaxed">
-          Blinq isn't just another file host. It is a purpose-built pipeline designed to protect intellectual property, large media assets, and sensitive documents from end to end. Here is exactly what happens when you hit upload.
+          Blynq isn't just another file host. It is a purpose-built pipeline designed to protect intellectual property, large media assets, and sensitive documents from end to end. Here is exactly what happens when you hit upload.
         </p>
       </div>
 

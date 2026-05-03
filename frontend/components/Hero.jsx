@@ -15,7 +15,7 @@ export default function Hero() {
       </h1>
       
       <p className="text-lg text-[#a1a1aa] mb-10 leading-relaxed font-light max-w-xl">
-        Blinq eliminates the bottleneck of traditional file sharing. Upload gigabytes of data securely, share the encrypted link instantly, and retrieve the exact, uncompressed file with absolute fidelity.
+        Blynq eliminates the bottleneck of traditional file sharing. Upload gigabytes of data securely, share the encrypted link instantly, and retrieve the exact, uncompressed file with absolute fidelity.
       </p>
 
       <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
