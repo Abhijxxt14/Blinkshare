@@ -4,7 +4,7 @@ import "./globals.css";
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta' });
 
 export const metadata = {
-  title: "Blinkshare",
+  title: "Blinq",
   description: "Share files across the digital void",
 };
 
