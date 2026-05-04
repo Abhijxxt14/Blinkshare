@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import ReceiveInput from "./ReceiveInput";
 import ResultCard from "./ResultCard";
+import { useToast } from "@/hooks/useToast";
+import Toast from "./Toast";
 
 export default function UploadSection() {
   const [result, setResult] = useState(null);
@@ -10,32 +12,43 @@ export default function UploadSection() {
   const [progress, setProgress] = useState(0);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
+  const { toasts, showToast, removeToast } = useToast();
 
   const processFile = async (file) => {
     setIsUploading(true);
     setProgress(0);
-    
-    // Simulate progress bar increment
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) return 90;
-        return prev + 10;
-      });
-    }, 200);
 
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:8000`;
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      const response = await fetch(`${API_BASE}/upload`, {
-        method: 'POST',
-        body: formData,
+      const response = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        // Track upload progress
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            setProgress(percentComplete);
+          }
+        });
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(xhr);
+          } else {
+            reject(new Error(`HTTP ${xhr.status}`));
+          }
+        });
+
+        xhr.addEventListener('error', () => reject(new Error('Upload failed')));
+
+        xhr.open('POST', `${API_BASE}/upload`);
+        xhr.send(formData);
       });
-      if (!response.ok) throw new Error('Upload failed');
-      const data = await response.json();
-      
-      clearInterval(progressInterval);
+
+      const data = JSON.parse(response.responseText);
       setProgress(100);
       
       setTimeout(() => {
@@ -45,11 +58,10 @@ export default function UploadSection() {
       }, 500);
       
     } catch (error) {
-      clearInterval(progressInterval);
       setIsUploading(false);
       setProgress(0);
       console.error(error);
-      alert('Error uploading file. Check connection.');
+      showToast("Error uploading file. Check connection.", "error");
     }
   };
 
@@ -105,6 +117,17 @@ export default function UploadSection() {
           </div>
         )}
       </div>
+
+      {/* Toast Notifications */}
+      {toasts.map((toast) => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          duration={toast.duration}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
     </div>
   );
 }

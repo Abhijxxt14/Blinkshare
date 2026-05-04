@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className="w-full border-t border-[rgba(255,255,255,0.05)] bg-[#050505] relative z-10 pt-16 pb-8">
       <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
         <div className="flex items-center gap-3">
-          <img src="/logo.jpeg" alt="Blynq Logo" className="w-6 h-6 rounded-full object-cover" />
+          <img src="/logo.png" alt="Blynq Logo" className="h-6 w-auto object-contain" />
           <span className="font-bold text-lg tracking-tight">Blynq</span>
         </div>
         

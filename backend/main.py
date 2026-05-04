@@ -13,6 +13,7 @@ from sqlite3 import Connection
 
 app = FastAPI(title="File Upload API")
 
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,7 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-UPLOAD_DIR = "uploads"
+# Configure max upload size (5GB for production)
+MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024  # 5GB in bytes
+CHUNK_SIZE = 1024 * 1024  # 1MB chunks for streaming
+
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")  # Use Render persistent disk if available
 
 @app.on_event("startup")
 def startup_event():
@@ -47,9 +52,29 @@ async def upload_file(request: Request, file: UploadFile = File(...), db: Connec
     filename = f"{code}{file_extension}"
     file_path = os.path.join(UPLOAD_DIR, filename)
     
-    # Save the file to disk
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
+    # Stream write the file in chunks instead of loading entire file into memory
+    # This enables support for large files (up to 5GB)
+    file_size = 0
+    try:
+        with open(file_path, "wb") as f:
+            while chunk := await file.read(CHUNK_SIZE):
+                # Track file size as we write
+                file_size += len(chunk)
+                
+                # Safety check: reject if file exceeds 5GB
+                if file_size > MAX_FILE_SIZE:
+                    f.close()
+                    os.remove(file_path)
+                    raise HTTPException(status_code=413, detail="File size exceeds 5GB limit")
+                
+                f.write(chunk)
+    except Exception as e:
+        # Clean up partial file on error
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        if "exceeds 5GB" in str(e):
+            raise e
+        raise HTTPException(status_code=400, detail="File upload failed")
 
     # Calculate expiration (current time + 5 hours)
     expires_at = time.time() + (5 * 3600)
@@ -96,8 +121,24 @@ async def get_file(code: str, db: Connection = Depends(get_db)):
         
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found on server")
-        
-    return FileResponse(file_path, filename=original_name)
+    
+    # For large files, use streaming to avoid loading entire file into memory
+    def file_iterator():
+        with open(file_path, "rb") as f:
+            while chunk := f.read(CHUNK_SIZE):
+                yield chunk
+    
+    # Check file size to decide between direct FileResponse and streaming
+    file_size = os.path.getsize(file_path)
+    if file_size > 100 * 1024 * 1024:  # If > 100MB, use streaming
+        return StreamingResponse(
+            file_iterator(),
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f"attachment; filename={original_name}"}
+        )
+    else:
+        # For smaller files, use direct FileResponse (more efficient)
+        return FileResponse(file_path, filename=original_name)
 
 @app.get("/qr/{code}")
 async def get_qr(request: Request, code: str, db: Connection = Depends(get_db)):

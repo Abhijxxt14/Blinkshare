@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: blinkshare-backend
+    runtime: python
+    pythonVersion: 3.11
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: PORT
+        value: 8000
+      - key: UPLOAD_DIR
+        value: /opt/render/uploads
+    disk:
+      name: upload-storage
+      mountPath: /opt/render/uploads
+      sizeGB: 100  # 100GB disk for file storage
+    memoryLimit: 2048  # 2GB RAM
+    cpuCount: 2

@@ -6,6 +6,9 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakart
 export const metadata = {
   title: "Blynq",
   description: "Share files across the digital void",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }) {
