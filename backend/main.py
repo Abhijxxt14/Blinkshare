@@ -76,8 +76,8 @@ async def upload_file(request: Request, file: UploadFile = File(...), db: Connec
             raise e
         raise HTTPException(status_code=400, detail="File upload failed")
 
-    # Calculate expiration (current time + 5 hours)
-    expires_at = time.time() + (5 * 3600)
+    # Calculate expiration (current time + 5 minutes)
+    expires_at = time.time() + (5 * 60)
     
     # Store metadata in SQLite
     original_name = file.filename
