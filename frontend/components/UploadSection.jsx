@@ -6,6 +6,68 @@ import ResultCard from "./ResultCard";
 import { useToast } from "@/hooks/useToast";
 import Toast from "./Toast";
 
+const styles = `
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scaleY(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes fadeOutScale {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+  }
+
+  @keyframes slideInProgress {
+    from {
+      opacity: 0;
+      width: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in-scale {
+    animation: fadeInScale 0.5s ease-out forwards;
+  }
+
+  .animate-fade-out-scale {
+    animation: fadeOutScale 0.3s ease-in forwards;
+  }
+
+  .progress-bar-container {
+    animation: slideInProgress 0.6s ease-out forwards;
+  }
+`;
+
+const StyleInjector = () => {
+  const [injected, setInjected] = useState(false);
+  
+  if (!injected && typeof document !== 'undefined') {
+    if (!document.getElementById('upload-section-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'upload-section-styles';
+      styleEl.textContent = styles;
+      document.head.appendChild(styleEl);
+      setInjected(true);
+    }
+  }
+  
+  return null;
+};
+
 export default function UploadSection() {
   const [result, setResult] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -67,6 +129,7 @@ export default function UploadSection() {
 
   return (
     <div id="upload-section" className="w-full max-w-[500px] relative">
+      <StyleInjector />
       <div className="absolute -inset-1 bg-gradient-to-r from-[#d946ef]/15 to-[#22d3ee]/15 rounded-[32px] blur-xl z-0 pointer-events-none"></div>
       
       <div className="relative z-10 w-full transition-all duration-500">
@@ -82,7 +145,7 @@ export default function UploadSection() {
                 onDrop={(e) => { e.preventDefault(); setIsDragOver(false); if(e.dataTransfer.files.length) processFile(e.dataTransfer.files[0]); }}
                 onClick={() => !isUploading && fileInputRef.current?.click()}
                 className={`border border-dashed rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${
-                  isDragOver ? "border-[#d946ef] bg-[#d946ef]/5" : "border-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.3)] bg-[rgba(255,255,255,0.01)] hover:bg-[rgba(255,255,255,0.03)]"
+                  isUploading ? "animate-fade-out-scale border-[rgba(255,255,255,0.1)] pointer-events-none" : isDragOver ? "border-[#d946ef] bg-[#d946ef]/5" : "border-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.3)] bg-[rgba(255,255,255,0.01)] hover:bg-[rgba(255,255,255,0.03)]"
                 }`}
               >
                 <div className="w-14 h-14 rounded-full bg-[rgba(255,255,255,0.05)] flex items-center justify-center mb-4 text-[#a1a1aa] transition-colors">
@@ -95,25 +158,34 @@ export default function UploadSection() {
                 <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { if(e.target.files.length) processFile(e.target.files[0]); }} disabled={isUploading} />
               </div>
 
+              {/* Progress Bar with Smooth Transition */}
               {isUploading && (
-                <div className="w-full h-1.5 bg-[rgba(255,255,255,0.05)] rounded-full overflow-hidden mt-1">
-                  <div 
-                    className="h-full bg-gradient-to-r from-[#d946ef] to-[#22d3ee] transition-all duration-300 ease-out"
-                    style={{ width: `${progress}%` }}
-                  ></div>
+                <div className="w-full flex flex-col gap-3">
+                  <div className="progress-bar-container w-full h-1.5 bg-[rgba(255,255,255,0.05)] rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#22d3ee] transition-all duration-500 ease-out shadow-[0_0_20px_rgba(217,70,239,0.5)]"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-[#a1a1aa] font-medium">Uploading...</span>
+                    <span className="text-xs text-[#a1a1aa] font-medium">{progress}%</span>
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Divider */}
-            <div className="flex items-center my-8">
+            <div className={`flex items-center transition-all duration-300 ${isUploading ? "opacity-30 pointer-events-none" : "opacity-100"}`} style={{margin: isUploading ? "0 0 0 0" : "2rem 0"}}>
               <div className="flex-1 h-[1px] bg-[rgba(255,255,255,0.05)]"></div>
               <span className="px-4 text-[#a1a1aa] text-[10px] font-bold tracking-[0.2em] uppercase">Or</span>
               <div className="flex-1 h-[1px] bg-[rgba(255,255,255,0.05)]"></div>
             </div>
 
             {/* Receive Section */}
-            <ReceiveInput disabled={isUploading} />
+            <div className={`transition-all duration-300 ${isUploading ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
+              <ReceiveInput disabled={isUploading} />
+            </div>
           </div>
         )}
       </div>
